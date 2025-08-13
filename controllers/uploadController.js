@@ -1,6 +1,7 @@
 import Upload from "../models/Upload.js";
 import fs from "fs";
 import path from "path";
+const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
 
 export const createUpload = async (req, res) => {
   try {
@@ -13,12 +14,16 @@ export const createUpload = async (req, res) => {
       genres: genres ? genres.split(",") : [],
       author,
       description,
-      image: req.files["image"]?.[0]?.filename,
+      image: req.files["image"]?.[0]
+        ? `${BASE_URL}/uploads/${req.files["image"][0].filename}`
+        : null,
       chapters: [
         {
           chapterNumber: 1,
           chapterTitle: title,
-          pdfFile: req.files["chapter"]?.[0]?.filename,
+          pdfFile: req.files["chapter"]?.[0]
+            ? `${BASE_URL}/uploads/${req.files["chapter"][0].filename}`
+            : null,
         },
       ],
     });
@@ -28,6 +33,7 @@ export const createUpload = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 export const addChapter = async (req, res) => {
   try {
     const { chapterNumber, chapterTitle } = req.body;
@@ -40,12 +46,16 @@ export const addChapter = async (req, res) => {
       return res.status(400).json({ message: "Chapter number already exists" });
     }
 
-    upload.chapters.push({
-      chapterNumber: Number(chapterNumber),
-      chapterTitle,
-      pdfFile: req.files["pdfFile"]?.[0]?.filename,
-      image: req.files["image"]?.[0]?.filename,
-    });
+   upload.chapters.push({
+  chapterNumber: Number(chapterNumber),
+  chapterTitle,
+  pdfFile: req.files["pdfFile"]?.[0]
+    ? `${BASE_URL}/uploads/${req.files["pdfFile"][0].filename}`
+    : null,
+  image: req.files["image"]?.[0]
+    ? `${BASE_URL}/uploads/${req.files["image"][0].filename}`
+    : null,
+});
 
     await upload.save();
     res.status(201).json(upload);
