@@ -14,16 +14,12 @@ export const createUpload = async (req, res) => {
       genres: genres ? genres.split(",") : [],
       author,
       description,
-      image: req.files["image"]?.[0]
-        ? `${BASE_URL}/uploads/${req.files["image"][0].filename}`
-        : null,
+      image: req.files["image"]?.[0]?.filename,
       chapters: [
         {
           chapterNumber: 1,
           chapterTitle: title,
-          pdfFile: req.files["chapter"]?.[0]
-            ? `${BASE_URL}/uploads/${req.files["chapter"][0].filename}`
-            : null,
+          pdfFile: req.files["chapter"]?.[0]?.filename,
         },
       ],
     });
@@ -33,7 +29,6 @@ export const createUpload = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 export const addChapter = async (req, res) => {
   try {
     const { chapterNumber, chapterTitle } = req.body;
@@ -46,16 +41,12 @@ export const addChapter = async (req, res) => {
       return res.status(400).json({ message: "Chapter number already exists" });
     }
 
-   upload.chapters.push({
-  chapterNumber: Number(chapterNumber),
-  chapterTitle,
-  pdfFile: req.files["pdfFile"]?.[0]
-    ? `${BASE_URL}/uploads/${req.files["pdfFile"][0].filename}`
-    : null,
-  image: req.files["image"]?.[0]
-    ? `${BASE_URL}/uploads/${req.files["image"][0].filename}`
-    : null,
-});
+    upload.chapters.push({
+      chapterNumber: Number(chapterNumber),
+      chapterTitle,
+      pdfFile: req.files["pdfFile"]?.[0]?.filename,
+      image: req.files["image"]?.[0]?.filename,
+    });
 
     await upload.save();
     res.status(201).json(upload);
